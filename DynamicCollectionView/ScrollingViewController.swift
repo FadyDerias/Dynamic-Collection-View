@@ -73,22 +73,32 @@ class ScrollingViewController: UIViewController {
         "10 aps[do"
     ]
 
+    private var collectionViewLayout: UICollectionViewLayout {
+        let sectionProvider = { (sectionIndex: Int, layoutEnvironment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection? in
+            let itemSize = NSCollectionLayoutSize(
+                widthDimension: .absolute(self.view.bounds.width),
+                heightDimension: .estimated(100))
+            let item = NSCollectionLayoutItem(layoutSize: itemSize)
+
+            let groupSize = NSCollectionLayoutSize(
+                widthDimension: .absolute(self.view.bounds.width),
+                heightDimension: .estimated(100))
+
+            let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, repeatingSubitem: item, count: 1)
+
+            return NSCollectionLayoutSection(group: group)
+        }
+        return UICollectionViewCompositionalLayout(sectionProvider: sectionProvider)
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
         view.backgroundColor = .blue
 
-        let layout = UICollectionViewFlowLayout()
-        layout.minimumLineSpacing = 0.0
-        layout.minimumInteritemSpacing = 0.0
-        layout.sectionInsetReference = .fromContentInset
-        layout.scrollDirection = .vertical
-        layout.estimatedItemSize = CGSize(width: view.bounds.width, height: 200)
-
-        collectionView.contentInsetAdjustmentBehavior = .always
         collectionView.backgroundColor = .white
         collectionView.dataSource = self
-        collectionView.collectionViewLayout = layout
+        collectionView.collectionViewLayout = collectionViewLayout
         collectionView.register(DynamicCollectionViewCell.self, forCellWithReuseIdentifier: DynamicCollectionViewCell.description())
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(collectionView)
